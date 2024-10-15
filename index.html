@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Adjustable count-up timer browser source for scoreboard."
+    />
+    <meta name="keywords" content="timer,stopwatch,입중계" />
+    <title>Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oxanium:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: black;
+        color: white;
+        font-size: 20px;
+        overflow: hidden;
+      }
+
+      #controls {
+        position: fixed;
+        margin: 0.5em;
+        opacity: 0;
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+
+      body:hover #controls {
+        opacity: 1;
+      }
+
+      #controls button,
+      #controls input {
+        font-size: 1rem;
+      }
+
+      #controls form {
+        display: inline-block;
+      }
+
+      #controls input {
+        width: 3em;
+      }
+
+      #timer {
+        text-align: center;
+        font-family: "Oxanium", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 700;
+        font-size: 30vw;
+        line-height: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <button class="offset" data-offset="-2000">-2 s</button>
+      <button class="offset" data-offset="-500">-0.5 s</button>
+      <button class="offset" data-offset="-50">-0.05 s</button> |
+      <form>
+        <input type="number" name="minutes" placeholder="00" /> :
+        <input type="number" name="seconds" placeholder="00" />
+        <button type="submit">Set</button>
+      </form>
+      |
+      <button class="offset" data-offset="50">+0.05 s</button>
+      <button class="offset" data-offset="500">+0.5 s</button>
+      <button class="offset" data-offset="2000">+2 s</button>
+    </div>
+    <div id="timer">
+      <span id="minutes"></span><span id="colon">:</span
+      ><span id="seconds"></span>
+    </div>
+    <script type="text/javascript">
+      const minutes = document.getElementById("minutes");
+      const seconds = document.getElementById("seconds");
+      const offsetButtons = document.querySelectorAll(".offset");
+      const setForm = document.forms[0];
+
+      let start = Date.now();
+
+      function padNumber(number) {
+        return number.toString().padStart(2, "0");
+      }
+
+      function updateClock() {
+        const elapsed = Date.now() - start;
+        const s = Math.floor(elapsed / 1000);
+        const m = Math.floor(s / 60);
+        seconds.textContent = padNumber(s % 60);
+        minutes.textContent = padNumber(m);
+      }
+
+      for (const button of offsetButtons) {
+        button.addEventListener("click", () => {
+          start -= parseInt(button.dataset.offset);
+        });
+      }
+
+      setForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const m = parseInt(setForm.minutes.value || 0);
+        const s = parseInt(setForm.seconds.value || 0);
+        start = Date.now() - (m * 60 + s) * 1000;
+
+        setForm.reset();
+      });
+
+      setInterval(updateClock, 50);
+    </script>
+  </body>
+</html>
